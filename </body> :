@@ -1,0 +1,15 @@
+</bosrc="https://js.stripe.com/v3/"></script>
+<script>
+  const stripe = Stripe("TA_CLE_PUBLIQUE_STRIPE"); // Mets ici ta clé publique Stripe
+
+  function startCheckout() {
+    stripe.redirectToCheckout({
+      lineItems: [{ price: "PRICE_ID_STRIPE", quantity: 1 }], // Mets ici l’ID du produit créé dans Stripe
+      mode: "subscription",
+      successUrl: "https://rouleauphilippe2023-oss.github.io/English-Avator/success.html",
+      cancelUrl: "https://rouleauphilippe2023-oss.github.io/English-Avator/cancel.html"
+    });
+  }
+</script>
+
+<button onclick="startCheckout()">Essai gratuit 7 jours</button>dy> :
