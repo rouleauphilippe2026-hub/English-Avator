@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bienvenue</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 50px;
+      background: linear-gradient(to bottom, #f0f8ff, #e6e6fa);
+    }
+    h1 {
+      color: #2c3e50;
+    }
+    p {
+      font-size: 18px;
+      color: #555;
+    }
+    footer {
+      margin-top: 40px;
+      font-size: 14px;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <h1>Bienvenue sur mon site 🚀</h1>
+  <p>Ce site est hébergé gratuitement avec <strong>GitHub Pages</strong>.</p>
+  <p>Bientôt, vous trouverez ici mon projet <strong>English Avatar</strong>.</p>
+
+  <footer>
+    © 2025 Philippe Rouleau - rouleauphilippe2023-oss
+  </footer>
+</body>
+</html>
