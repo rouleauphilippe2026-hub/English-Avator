@@ -1,3 +1,5 @@
+
+
 const express = require('express');
 const stripe = require('stripe')('YOUR_STRIPE_SECRET_KEY'); // Remplacez par votre clé secrète Stripe
 const app = express();
@@ -19,4 +21,3 @@ app.post('/create-checkout-session', async (req, res) => {
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
-});
