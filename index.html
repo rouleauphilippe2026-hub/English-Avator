@@ -1,13 +1,89 @@
-<script src="https://js.stripe.com/v3/"></script>
-<script>
-  const stripe = Stripe("TA_CLE_PUBLIQUE_STRIPE");
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>English Avator</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: linear-gradient(to right, #74ebd5, #ACB6E5);
+      color: #333;
+    }
+    header {
+      padding: 20px;
+      background: #2e3b55;
+      color: white;
+    }
+    h1 { margin: 0; }
+    #avatar-container {
+      width: 100%;
+      height: 500px;
+    }
+    button {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      font-size: 18px;
+      margin: 20px;
+      cursor: pointer;
+      border-radius: 8px;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Apprends l’anglais avec ton Avatar</h1>
+    <p>Essai gratuit de 7 jours, puis 7,99 $ CAD / mois</p>
+  </header>
 
-  function startCheckout() {
-    stripe.redirectToCheckout({
-      lineItems: [{ price: "PRIX_ID_STRIPE", quantity: 1 }],
-      mode: "subscription",
-      successUrl: "https://rouleauphilippe2023-oss.github.io/English-Avator/success.html",
-      cancelUrl: "https://rouleauphilippe2023-oss.github.io/English-Avator/cancel.html"
+  <div id="avatar-container"></div>
+
+  <!-- Bouton Stripe -->
+  <button onclick="startCheckout()">🚀 Essai gratuit 7 jours</button>
+
+  <!-- Three.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/loaders/GLTFLoader.js"></script>
+
+  <!-- Stripe -->
+  <script src="https://js.stripe.com/v3/"></script>
+  <script>
+    const stripe = Stripe("TA_CLE_PUBLIQUE_STRIPE"); // 👉 Remplace par ta clé publique Stripe
+
+    function startCheckout() {
+      stripe.redirectToCheckout({
+        lineItems: [{ price: "PRICE_ID_STRIPE", quantity: 1 }], // 👉 Remplace par l'ID de ton produit Stripe
+        mode: "subscription",
+        successUrl: "https://rouleauphilippe2023-oss.github.io/English-Avator/success.html",
+        cancelUrl: "https://rouleauphilippe2023-oss.github.io/English-Avator/cancel.html"
+      });
+    }
+
+    // Charger l'avatar 3D
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, 500);
+    document.getElementById('avatar-container').appendChild(renderer.domElement);
+
+    const loader = new THREE.GLTFLoader();
+    loader.load('eunomie (1).glb', function(gltf) {
+      const model = gltf.scene;
+      scene.add(model);
+      camera.position.z = 5;
+      function animate() {
+        requestAnimationFrame(animate);
+        model.rotation.y += 0.01;
+        renderer.render(scene, camera);
+      }
+      animate();
     });
-  }
-</script>
+  </script>
+</body>
+</html>
