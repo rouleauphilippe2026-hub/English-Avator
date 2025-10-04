@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vocabulaire avec Avatar IA</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+      color: white;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .container {
+      width: 100%;
+      max-width: 600px;
+      margin-top: 30px;
+      background: rgba(0,0,0,0.12);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.17);
+      text-align: center;
+    }
+    h1 {
+      font-size: 2em;
+      margin-bottom: 14px;
+      font-weight: bold;
+    }
+    #avatar-3d {
+      width: 320px;
+      height: 220px;
+      background: #222;
+      border-radius: 12px;
+      margin: 0 auto 18px auto;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.20);
+      overflow: hidden;
+      position: relative;
+    }
+    #mot {
+      font-size: 1.25em;
+      font-weight: bold;
+      margin: 20px 0 10px 0;
+      color: #ffc107;
+    }
+    #result {
+      font-size:1.15em;
+      padding:8px;
+      margin-bottom:18px;
+      min-height:32px;
+    }
+    #voice-btn {
+      background: #ffc107;
+      color: #222;
+      border: none;
+      border-radius: 18px;
+      font-size: 1.1em;
+      padding: 12px 24px;
+      cursor: pointer;
+      font-weight: bold;
+      margin: 8px auto 14px auto;
+      box-shadow: 0 2px 8px rgba(255,193,7,0.15);
+      display: block;
+      transition: background 0.2s;
+    }
+    #voice-btn.listen { background: #ff9800; color:white; }
+    #next-btn {
+      background: #43ea50;
+      color: #222;
+      border: none;
+      border-radius: 12px;
+      font-size: 1em;
+      padding: 10px 18px;
+      cursor: pointer;
+      font-weight: bold;
+      margin: 6px auto 0 auto;
+      display: none;
+      box-shadow: 0 2px 8px rgba(67,234,80,0.15);
+      transition: background 0.2s;
+    }
+    #next-btn:hover { background: #2ba23b; color:white; }
+    @media (max-width: 650px) {
+      .container { max-width: 99vw; }
+      #avatar-3d { width: 98vw; height: 140px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Prononce le mot de vocabulaire !</h1>
+    <div id="avatar-3d"></div>
+    <div id="mot"></div>
+    <div id="result"></div>
+    <button id="voice-btn">🎤 Prononcer le mot</button>
+    <button id="next-btn">Mot suivant</button>
+    <div style="margin-top:8px;opacity:0.75;font-size:0.95em;">
+      <em>Prononce le mot affiché : la tonalité et la prononciation sont évaluées.<br>
+      Atteins 80 % pour passer au mot suivant !</em>
+    </div>
+  </div>
+  <!-- Three.js CDN & GLTFLoader -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/examples/js/loaders/GLTFLoader.min.js"></script>
+  <script>
+    let avatar, scene, camera, renderer, clock;
+    let batonAnim = false, rewardAnim = false, animTimeout = null;
+    // Création scene
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(75, 320/220, 0.1, 1000);
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(320, 220);
+    document.getElementById('avatar-3d').appendChild(renderer.domElement);
+    clock = new THREE.Clock();
+
+    // Lumière
+    const light = new THREE.PointLight(0xffffff, 1.1);
+    light.position.set(2, 3, 4);
+    scene.add(light);
+
+    // Chargement de l'avatar eunomia (1).glb
+    const loader = new THREE.GLTFLoader();
+    loader.load('eunomia (1).glb', function(gltf) {
+      avatar = gltf.scene;
+      avatar.scale.set(1.7, 1.7, 1.7);
+      avatar.position.y = -0.6;
+      scene.add(avatar);
+      animate();
+    }, undefined, function(error) {
+      console.error(error);
+      const tempGeo = new THREE.BoxGeometry();
+      const tempMat = new THREE.MeshPhongMaterial({ color: 0x2575fc, shininess: 100 });
+      avatar = new THREE.Mesh(tempGeo, tempMat);
+      scene.add(avatar);
+      animate();
+    });
+
+    // Animation spéciale récompense
+    function rewardGesture() {
+      if (!avatar) return;
+      rewardAnim = true;
+      if(animTimeout) clearTimeout(animTimeout);
+      animTimeout = setTimeout(()=>{ rewardAnim=false; }, 1200);
+    }
+    // Animation “bâton tapé”
+    function batonGesture() {
+      if (!avatar) return;
+      batonAnim = true;
+      if(animTimeout) clearTimeout(animTimeout);
+      animTimeout = setTimeout(()=>{ batonAnim=false; }, 1000);
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      // Récompense: tour rapide + couleur
+      if (rewardAnim) {
+        avatar.rotation.y += 0.15;
+        avatar.traverse(function(child){
+          if(child.isMesh) child.material.color.setHex(0x43ea50); // vert
+        });
+      } else if (batonAnim) {
+        avatar.traverse(function(child){
+          if(child.isMesh) child.material.color.setHex(0xed2939); // rouge
+        });
+        // Simule "bâton" : descend/remonte
+        let t = clock.getElapsedTime();
+        avatar.position.y = -0.6 - Math.abs(Math.sin(t*8))*0.3;
+      } else {
+        avatar.rotation.y += 0.016;
+        avatar.traverse(function(child){
+          if(child.isMesh) child.material.color.setHex(0x2575fc); // bleu normal
+        });
+        avatar.position.y = -0.6;
+      }
+      renderer.render(scene, camera);
+    }
+  </script>
+  <script>
+    // Liste de mots de vocabulaire
+    const mots = ['apple', 'beautiful', 'cat', 'dog', 'elephant', 'family', 'good', 'house', 'important', 'jump', 'king', 'light', 'music'];
+    let motIndex = 0;
+
+    // Affiche le mot courant
+    function showMot() {
+      document.getElementById('mot').textContent = "Mot à prononcer : " + mots[motIndex];
+      document.getElementById('result').textContent = "Clique sur 🎤 puis prononce le mot.";
+      document.getElementById('next-btn').style.display = "none";
+    }
+    showMot();
+
+    // Reconnaissance vocale + tonalité (fréquence moyenne)
+    let listening = false;
+    let recognition, audioCtx, analyser, source, freqData;
+    let score = 0;
+
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognition = new SpeechRecognition();
+      recognition.lang = 'en-US';
+      recognition.continuous = false;
+      recognition.interimResults = false;
+
+      recognition.onstart = () => {
+        listening = true;
+        voiceBtn.classList.add('listen');
+        result.textContent = "Parle maintenant : prononce le mot affiché.";
+        // Démarre analyse audio (fréquence)
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+          navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioCtx.createAnalyser();
+            source = audioCtx.createMediaStreamSource(stream);
+            analyser.fftSize = 2048;
+            freqData = new Uint8Array(analyser.frequencyBinCount);
+            source.connect(analyser);
+          });
+        }
+      };
+      recognition.onend = () => {
+        listening = false;
+        voiceBtn.classList.remove('listen');
+        // Arrête analyse audio
+        if (audioCtx) audioCtx.close();
+      };
+      recognition.onresult = (event) => {
+        let text = event.results[0][0].transcript.toLowerCase();
+        let motAttendu = mots[motIndex].toLowerCase();
+        let okPrononciation = (text.trim() === motAttendu);
+        let freqScore = 0;
+        if (analyser && freqData) {
+          analyser.getByteFrequencyData(freqData);
+          // Calcule une "tonalité" moyenne sur la plage de fréquences parlées (approximatif)
+          let sum = 0, count = 0;
+          for (let i = 40; i < 180; i++) { sum += freqData[i]; count++; }
+          let avg = sum / count;
+          // On considère > 20 comme "bonne énergie vocale", à affiner selon tests
+          freqScore = Math.min(avg / 25, 1); // score entre 0 et 1
+        }
+        score = Math.round((okPrononciation ? 0.7 : 0) + freqScore * 0.3) * 100; // pondération 70% texte, 30% tonalité
+
+        // Condition de réussite
+        if (okPrononciation && freqScore > 0.5) {
+          score = Math.round(100 * (0.7 + freqScore * 0.3));
+          rewardGesture();
+          result.innerHTML = `✅ <b>Bravo !</b> Tu as bien prononcé <b>${motAttendu}</b><br>Score de tonalité : <b>${Math.round(freqScore*100)}%</b><br>Score global : <b>${score}%</b>`;
+          document.getElementById('next-btn').style.display = "inline-block";
+        } else {
+          batonGesture();
+          result.innerHTML = `❌ <b>Oups !</b> Mot reconnu : <b>${text}</b><br>Score tonalité : <b>${Math.round(freqScore*100)}%</b><br>Tu dois atteindre 80 % pour passer au mot suivant.`;
+          document.getElementById('next-btn').style.display = "none";
+        }
+      };
+    }
+
+    const voiceBtn = document.getElementById('voice-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const result = document.getElementById('result');
+
+    voiceBtn.onclick = () => {
+      if (!recognition) {
+        result.textContent = "Reconnaissance vocale non supportée sur ce navigateur.";
+        return;
+      }
+      if (!listening) recognition.start();
+    };
+
+    nextBtn.onclick = () => {
+      motIndex++;
+      if (motIndex >= mots.length) motIndex = 0;
+      showMot();
+    };
+  </script>
+</body>
+</html>
