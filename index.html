@@ -1,13 +1,46 @@
-<script src="https://js.stripe.com/v3/"></script>
-<script>
-  const stripe = Stripe("TA_CLE_PUBLIQUE_STRIPE");
-
-  function startCheckout() {
-    stripe.redirectToCheckout({
-      lineItems: [{ price: "PRIX_ID_STRIPE", quantity: 1 }],
-      mode: "subscription",
-      successUrl: "https://rouleauphilippe2023-oss.github.io/English-Avator/success.html",
-      cancelUrl: "https://rouleauphilippe2023-oss.github.io/English-Avator/cancel.html"
-    });
-  }
-</script>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>English Avatar – Essai gratuit</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 40px;
+      background: #f6f7fb;
+    }
+    h1 {
+      color: #2c3e50;
+      margin-bottom: 20px;
+    }
+    p {
+      color: #34495e;
+      margin-bottom: 30px;
+      font-size: 1.1em;
+    }
+    .cta-btn {
+      background: #03a9f4;
+      color: #fff;
+      border: none;
+      padding: 16px 40px;
+      border-radius: 8px;
+      font-size: 1.2em;
+      cursor: pointer;
+      transition: background 0.2s;
+      text-decoration: none;
+      box-shadow: 0 4px 12px rgba(3,169,244,0.12);
+    }
+    .cta-btn:hover {
+      background: #0288d1;
+    }
+  </style>
+</head>
+<body>
+  <h1>🚀 Bienvenue sur avatar-english-development.ca !</h1>
+  <p>Ce site est hébergé avec <strong>GitHub Pages</strong>.<br>
+  Bientôt, vous trouverez ici le projet <strong>English Avatar</strong> avec avatar 3D et paiements Stripe 💳.</p>
+  <a href="#" class="cta-btn">Commencer l’essai gratuit</a>
+</body>
+</html>
