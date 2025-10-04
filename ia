@@ -1,0 +1,44 @@
+// Remplace 'OPENAI_API_KEY' par ta clé API OpenAI dans les variables d'environnement Vercel
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+
+export default async function handler(req, res) {
+  if (req.method === "POST") {
+    const { message } = req.body;
+
+    if (!OPENAI_API_KEY) {
+      return res.status(500).json({ reply: "Erreur : clé API OpenAI manquante sur le serveur." });
+    }
+    if (!message) {
+      return res.status(400).json({ reply: "Erreur : aucun message à traiter." });
+    }
+
+    try {
+      const openaiRes = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${OPENAI_API_KEY}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: "gpt-3.5-turbo", // tu peux changer pour gpt-4 si tu as accès !
+          messages: [{ role: "user", content: message }],
+          max_tokens: 256,
+          temperature: 0.7
+        })
+      });
+
+      if (!openaiRes.ok) {
+        const err = await openaiRes.json();
+        return res.status(openaiRes.status).json({ reply: `Erreur OpenAI : ${err.error?.message || "Inconnue"}` });
+      }
+
+      const data = await openaiRes.json();
+      const reply = data.choices?.[0]?.message?.content || "Réponse IA non disponible pour le moment.";
+      res.status(200).json({ reply });
+    } catch (e) {
+      res.status(500).json({ reply: "Erreur serveur lors de la réponse IA." });
+    }
+  } else {
+    // Test GET
+    res.status(200).json({ message: "Hello from English Avatar API!" });
+  }
