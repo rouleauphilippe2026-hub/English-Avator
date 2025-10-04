@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>English Avator</title>
+  <title>English Avatar</title>
   <style>
     body { font-family: Arial, sans-serif; background: #f6f6f6; }
     #chatbox { background: #fff; padding: 10px; border-radius: 8px; max-width: 500px; margin: 30px auto 10px; min-height: 200px; box-shadow: 0 2px 8px #ccc; }
@@ -39,10 +39,16 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ message: msg })
         });
+        if (!response.ok) {
+          throw new Error("API non disponible");
+        }
         const data = await response.json();
-        return data.reply;
+        if (data.reply) return data.reply;
+        if (data.answer) return data.answer;
+        if (data.message) return data.message;
+        return "Réponse IA reçue, mais format inattendu.";
       } catch (e) {
-        return "Erreur API : Impossible d’obtenir la réponse IA.";
+        return "❌ Erreur API : Impossible d’obtenir la réponse IA.";
       }
     }
     document.getElementById('chatform').onsubmit = async function(e) {
