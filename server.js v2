@@ -1,0 +1,54 @@
+const express = require('express');
+const stripe = require('stripe')('YOUR_STRIPE_SECRET_KEY'); // Remplacez par votre clé Stripe
+const OpenAI = require('openai');
+const cors = require('cors');
+
+const app = express();
+const port = 3000;
+
+// Middleware
+app.use(express.json());
+app.use(cors());
+
+// Stripe route
+app.post('/create-checkout-session', async (req, res) => {
+    const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: req.body.items,
+        mode: 'payment',
+        success_url: 'http://localhost:3000/success',
+        cancel_url: 'http://localhost:3000/cancel',
+    });
+    res.json({ id: session.id });
+});
+
+// Chatbot GPT-4o route
+app.post('/api/chat', async (req, res) => {
+    const { message } = req.body;
+    if (!message) {
+        return res.status(400).json({ error: "Message manquant" });
+    }
+
+    try {
+        const openai = new OpenAI({
+            apiKey: process.env.OPENAI_API_KEY,
+        });
+
+        const response = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: [
+                { role: "system", content: "Tu es un assistant intelligent pour un site d'apprentissage de l'anglais nommé English Avatar." },
+                { role: "user", content: message }
+            ],
+        });
+
+        const reply = response.choices[0].message.content;
+        res.status(200).json({ reply });
+    } catch (error) {
+        console.error("Erreur OpenAI :", error);
+        res.status(500).json({ error: "Erreur API OpenAI" });
+    }
+});
+
+app.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}`);
