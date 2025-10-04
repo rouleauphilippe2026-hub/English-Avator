@@ -1,12 +1,1 @@
-
-  "name": "english-avator",
-  "version": "1.0.0",
-  "description": "An interactive program to learn English with a 3D animated avatar.",
-  "main": "index.js",
-  "scripts": {
-    "start": "node server.js"
-  },
-  "dependencies": {
-    "openai": "^4.0.0"
-  }
-}
+{ "name": "english-avator", "version": "1.0.0", "description": "An interactive program to learn English with a 3D animated avatar.", "main": "index.js", "scripts": { "start": "node server.js" }, "dependencies": { "openai": "^4.0.0" } }
