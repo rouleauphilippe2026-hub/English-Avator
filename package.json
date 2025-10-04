@@ -1,0 +1,1 @@
+{\n  "name": "english-avator",\n  "version": "1.0.0",\n  "description": "An interactive program to learn English with a 3D animated avatar.",\n  "main": "index.js",\n  "scripts": {\n    "start": "node server.js"\n  },\n  "dependencies": {\n    "openai": "^4.0.0"\n  }\n}
