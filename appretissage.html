@@ -1,0 +1,138 @@
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+<!DOCTYPE html>
+      result.innerHTML = `🎉 <b>Bravo !</b> Tu as choisi le niveau <b>${level}</b>.<br>L’avatar te félicite !`;
+    }
+
+    function showLevel(level) {
+      // Exemples d’activités par niveau (à personnaliser)
+      const activities = [
+        "Découvre l’alphabet et les bases de l’anglais.",
+        "Apprends des mots simples et des phrases courtes.",
+        "Commence à parler de toi et ta famille.",
+        "Pose des questions simples, comprends des réponses.",
+        "Raconte une petite histoire en anglais.",
+        "Exprime tes opinions sur des sujets faciles.",
+        "Comprends des textes courts (dialogues, emails).",
+        "Parle de tes expériences, voyages, projets.",
+        "Débats sur des sujets d’actualité en anglais.",
+        "Maîtrise l’anglais courant et professionnel."
+      ];
+      // Optionnel: afficher activité
+      // result.innerHTML += `<br><em>${activities[level-1]}</em>`;
+    }
+
+    // Reconnaissance vocale navigateur
+    let listening = false;
+    let recognition;
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognition = new SpeechRecognition();
+      recognition.lang = 'fr-FR';
+      recognition.continuous = false;
+      recognition.interimResults = false;
+
+      recognition.onstart = () => {
+        listening = true;
+        voiceBtn.classList.add('listen');
+        result.textContent = "Parle maintenant : dis ton niveau (ex : 'niveau 3')";
+      };
+      recognition.onend = () => {
+        listening = false;
+        voiceBtn.classList.remove('listen');
+      };
+      recognition.onresult = (event) => {
+        let text = event.results[0][0].transcript.toLowerCase();
+        let match = text.match(/niveau\s*(\d{1,2})/);
+        if (match && match[1] && parseInt(match[1]) >= 1 && parseInt(match[1]) <= 10) {
+          let n = parseInt(match[1]);
+          selectLevel(n);
+        } else {
+          batonGesture();
+          result.innerHTML = `❌ <b>Oups !</b> Niveau non reconnu.<br>L’avatar tape le bâton et te demande de réessayer.`;
+        }
+      };
+    }
+
+    const voiceBtn = document.getElementById('voice-btn');
+    const result = document.getElementById('result');
+    voiceBtn.onclick = () => {
+      if (!recognition) {
+        result.textContent = "Reconnaissance vocale non supportée sur ce navigateur.";
+        return;
+      }
+      if (!listening) recognition.start();
+    };
+
+    // Message par défaut
+    result.innerHTML = "Sélectionne ou dis ton niveau d’apprentissage !";
+  </script>
+</body>
+</html>
+apprentissage.html
