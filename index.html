@@ -1,13 +1,160 @@
-<script src="https://js.stripe.com/v3/"></script>
-<script>
-  const stripe = Stripe("TA_CLE_PUBLIQUE_STRIPE");
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>English Avator</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: linear-gradient(to right, #74ebd5, #ACB6E5);
+      color: #333;
+    }
+    header {
+      padding: 20px;
+      background: #2e3b55;
+      color: white;
+    }
+    h1 { margin: 0; }
+    #avatar-container {
+      width: 100%;
+      height: 500px;
+    }
+    button {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      font-size: 18px;
+      margin: 20px;
+      cursor: pointer;
+      border-radius: 8px;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+    #chatbot-container {
+      margin:40px auto;
+      max-width:500px;
+      text-align:left;
+      background:#fff;
+      border-radius:10px;
+      box-shadow:0 0 10px rgba(0,0,0,0.05);
+      padding:20px;
+    }
+    #chat-history {
+      min-height:80px;
+      background:#f3f7fb;
+      padding:10px;
+      border-radius:10px;
+      margin-bottom:10px;
+      font-size:16px;
+    }
+    #user-question {
+      width:70%;
+      padding:10px;
+      font-size:16px;
+      border-radius:6px;
+      border:1px solid #ccc;
+    }
+    #send-btn {
+      padding:10px 18px;
+      font-size:16px;
+      border-radius:6px;
+      background:#2e3b55;
+      color:#fff;
+      border:none;
+      cursor:pointer;
+    }
+    #send-btn:hover {
+      background:#476091;
+    }
+    #bot-status {
+      margin-top:10px;
+      color:#c00;
+      min-height:20px;
+      font-size:15px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Apprends l’anglais avec ton Avatar</h1>
+    <p>Essai gratuit de 7 jours, puis 7,99 $ CAD / mois</p>
+  </header>
 
-  function startCheckout() {
-    stripe.redirectToCheckout({
-      lineItems: [{ price: "PRIX_ID_STRIPE", quantity: 1 }],
-      mode: "subscription",
-      successUrl: "https://rouleauphilippe2023-oss.github.io/English-Avator/success.html",
-      cancelUrl: "https://rouleauphilippe2023-oss.github.io/English-Avator/cancel.html"
+  <div id="avatar-container"></div>
+
+  <!-- Bouton Stripe -->
+  <button onclick="startCheckout()">🚀 Essai gratuit 7 jours</button>
+
+  <!-- Section Chatbot -->
+  <div id="chatbot-container">
+    <h2>Bienvenue ! Je suis ton avatar intelligent. Pose-moi une question !</h2>
+    <div id="chat-history"></div>
+    <input type="text" id="user-question" placeholder="Pose ta question..." />
+    <button id="send-btn" onclick="sendQuestion()">Envoyer</button>
+    <div id="bot-status"></div>
+  </div>
+
+  <!-- Three.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/loaders/GLTFLoader.js"></script>
+
+  <!-- Stripe -->
+  <script src="https://js.stripe.com/v3/"></script>
+  <script>
+    const stripe = Stripe("TA_CLE_PUBLIQUE_STRIPE"); // 👉 Remplace par ta clé publique Stripe
+
+    function startCheckout() {
+      stripe.redirectToCheckout({
+        lineItems: [{ price: "PRICE_ID_STRIPE", quantity: 1 }], // 👉 Remplace par l'ID de ton produit Stripe
+        mode: "subscription",
+        successUrl: "https://rouleauphilippe2023-oss.github.io/English-Avator/success.html",
+        cancelUrl: "https://rouleauphilippe2023-oss.github.io/English-Avator/cancel.html"
+      });
+    }
+
+    // Charger l'avatar 3D
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, 500);
+    document.getElementById('avatar-container').appendChild(renderer.domElement);
+
+    const loader = new THREE.GLTFLoader();
+    loader.load('eunomie (1).glb', function(gltf) {
+      const model = gltf.scene;
+      scene.add(model);
+      camera.position.z = 5;
+      function animate() {
+        requestAnimationFrame(animate);
+        model.rotation.y += 0.01;
+        renderer.render(scene, camera);
+      }
+      animate();
     });
-  }
-</script>
+
+    // Chatbot JS
+    async function sendQuestion() {
+      const question = document.getElementById('user-question').value;
+      if (!question) return;
+      document.getElementById('bot-status').innerText = "Attends la réponse de l'IA...";
+      try {
+        const res = await fetch('https://english-avator-u31q.vercel.app/api/chat', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({question})
+        });
+        if (!res.ok) throw new Error('API non disponible');
+        const data = await res.json();
+        document.getElementById('chat-history').innerHTML += `<b>Vous:</b> ${question}<br><b>Avatar:</b> ${data.answer}<br>`;
+        document.getElementById('user-question').value = '';
+        document.getElementById('bot-status').innerText = '';
+      } catch (e) {
+        document.getElementById('bot-status').innerText = "Erreur API : Impossible d’obtenir la réponse IA.";
+      }
+    }
+  </script>
+</body>
