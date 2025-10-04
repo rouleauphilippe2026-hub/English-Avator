@@ -9,38 +9,55 @@
       font-family: Arial, sans-serif;
       text-align: center;
       padding: 40px;
-      background: #f6f7fb;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .container {
+      max-width: 800px;
+      padding: 40px;
     }
     h1 {
-      color: #2c3e50;
-      margin-bottom: 20px;
+      color: #ffffff;
+      margin-bottom: 30px;
+      font-size: 2.5em;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
     }
     p {
-      color: #34495e;
-      margin-bottom: 30px;
-      font-size: 1.1em;
+      color: #ffffff;
+      margin-bottom: 40px;
+      font-size: 1.2em;
+      line-height: 1.6;
     }
     .cta-btn {
       background: #03a9f4;
       color: #fff;
       border: none;
-      padding: 16px 40px;
-      border-radius: 8px;
+      padding: 18px 48px;
+      border-radius: 50px;
       font-size: 1.2em;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: all 0.3s;
       text-decoration: none;
-      box-shadow: 0 4px 12px rgba(3,169,244,0.12);
+      display: inline-block;
+      box-shadow: 0 6px 20px rgba(3,169,244,0.4);
+      font-weight: bold;
     }
     .cta-btn:hover {
       background: #0288d1;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(3,169,244,0.5);
     }
   </style>
 </head>
 <body>
-  <h1>🚀 Bienvenue sur avatar-english-development.ca !</h1>
-  <p>Ce site est hébergé avec <strong>GitHub Pages</strong>.<br>
-  Bientôt, vous trouverez ici le projet <strong>English Avatar</strong> avec avatar 3D et paiements Stripe 💳.</p>
-  <a href="#" class="cta-btn">Commencer l’essai gratuit</a>
+  <div class="container">
+    <h1>Bienvenue sur English Avatar !</h1>
+    <p>Ce site vous présentera bientôt le projet <strong>English Avatar</strong> : avatars 3D et paiements Stripe 💳.<br>Bénéficiez d'un essai gratuit pendant 7 jours !</p>
+    <a href="#" class="cta-btn">Commencer l'essai gratuit</a>
+  </div>
 </body>
 </html>
