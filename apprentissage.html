@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apprentissage par niveaux</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(120deg, #43cea2 0%, #185a9d 100%);
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+    header {
+      background: #185a9d;
+      padding: 16px 0 12px 0;
+      box-shadow: 0 2px 12px rgba(24,90,157,0.18);
+      text-align: center;
+    }
+    .menu {
+      display: flex;
+      justify-content: center;
+      gap: 36px;
+      margin-top: 8px;
+    }
+    .menu a {
+      color: #fff;
+      background: #43cea2;
+      text-decoration: none;
+      font-weight: bold;
+      padding: 10px 22px;
+      border-radius: 20px;
+      font-size: 1.13em;
+      box-shadow: 0 2px 8px rgba(67,206,162,0.18);
+      transition: background 0.2s;
+    }
+    .menu a.active, .menu a:hover {
+      background: #185a9d;
+      color: #ffd700;
+    }
+    main {
+      max-width: 900px;
+      margin: 36px auto 0 auto;
+      padding: 0 12px;
+    }
+    h1 {
+      text-align: center;
+      font-size: 2.2em;
+      margin-bottom: 26px;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+    .levels {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 32px;
+      justify-content: center;
+    }
+    .level-card {
+      background: rgba(0,0,0,0.13);
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(24,90,157,0.09);
+      width: 260px;
+      padding: 28px 18px 16px 18px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.2s;
+    }
+    .level-card:hover {
+      transform: translateY(-7px) scale(1.03);
+      background: rgba(67, 206, 162, 0.18);
+    }
+    .level-title {
+      font-size: 1.25em;
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: #ffd700;
+      letter-spacing: 0.5px;
+    }
+    .level-desc {
+      font-size: 1.05em;
+      margin-bottom: 15px;
+      color: #e2e2e2;
+      min-height: 48px;
+    }
+    .level-btn {
+      background: #ffd700;
+      color: #185a9d;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 22px;
+      font-size: 1em;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(255,215,0,0.13);
+      transition: background 0.2s;
+    }
+    .level-btn:hover {
+      background: #43cea2;
+      color: #fff;
+    }
+    @media (max-width: 700px) {
+      .levels {
+        flex-direction: column;
+        gap: 22px;
+        align-items: center;
+      }
+      .level-card {
+        width: 94vw;
+        max-width: 340px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav class="menu">
+      <a href="index.html">Accueil</a>
+      <a href="apprentissage.html" class="active">Apprentissage</a>
+      <a href="vocabulaire.html">Vocabulaire</a>
+    </nav>
+  </header>
+  <main>
+    <h1>Choisis ton niveau d’apprentissage</h1>
+    <div class="levels">
+      <div class="level-card">
+        <div class="level-title">Niveau 1&nbsp;: Débutant</div>
+        <div class="level-desc">
+          Idéal pour commencer. Découvre les bases de l’anglais&nbsp;: mots simples, phrases courtes, premières conversations.
+        </div>
+        <button class="level-btn" onclick="window.location.href='vocabulaire.html'">Commencer</button>
+      </div>
+      <div class="level-card">
+        <div class="level-title">Niveau 2&nbsp;: Intermédiaire</div>
+        <div class="level-desc">
+          Renforce ton vocabulaire et ta grammaire. Exercices sur les temps, les descriptions, les situations courantes.
+        </div>
+        <button class="level-btn" onclick="window.location.href='vocabulaire.html'">Commencer</button>
+      </div>
+      <div class="level-card">
+        <div class="level-title">Niveau 3&nbsp;: Avancé</div>
+        <div class="level-desc">
+          Pour aller plus loin&nbsp;: expressions idiomatiques, compréhension orale, conversations avancées.
+        </div>
+        <button class="level-btn" onclick="window.location.href='vocabulaire.html'">Commencer</button>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
