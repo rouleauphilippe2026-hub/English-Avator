@@ -1,162 +1,35 @@
- 88
- 89
- 90
- 91
- 92
- 93
- 94
- 95
- 96
- 97
- 98
- 99
-100
-101
-102
-103
-104
-105
-106
-107
-108
-109
-110
-111
-112
-113
-114
-115
-116
-117
-118
-119
-120
-121
-122
-123
-124
-125
-126
-127
-128
-129
-130
-131
-132
-133
-134
-135
-136
-137
-138
-139
-140
-141
-142
-143
-144
-145
-146
-147
-148
-149
-150
-151
-152
-153
-154
-155
-156
-157
-158
-159
-160
-161
-162
-163
-164
-165
-166
-167
-<!DOCTYPE html>
-      <button type="submit" id="sendbtn">Envoyer</button>
-    </form>
-    <p style="margin-top: 18px; font-size:0.95em;opacity:0.7;">Démo : L’avatar répond sans IA externe.<br>Pour une vraie intelligence, ajoute une API plus tard !</p>
-  </div>
-  <!-- Three.js CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.min.js"></script>
-  <script>
-    // Affichage Avatar 3D : Cube animé (remplaçable par un modèle .glb)
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, 320/240, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(320, 240);
-    document.getElementById('avatar-3d').appendChild(renderer.domElement);
-
-    const geometry = new THREE.BoxGeometry();
-    const material = new THREE.MeshPhongMaterial({ color: 0x2575fc, shininess: 100 });
-    const cube = new THREE.Mesh(geometry, material);
-    scene.add(cube);
-
-    const light = new THREE.PointLight(0xffffff, 1.3);
-    light.position.set(2, 3, 4);
-    scene.add(light);
-
-    camera.position.z = 3;
-
-    function animate() {
-      requestAnimationFrame(animate);
-      cube.rotation.y += 0.018;
-      cube.rotation.x += 0.007;
-      renderer.render(scene, camera);
+<script>
+  // Chatbot intelligent (IA via backend Vercel)
+  const chatbox = document.getElementById('chatbox');
+  function addMsg(text, sender) {
+    const div = document.createElement('div');
+    div.className = 'msg ' + sender;
+    div.textContent = text;
+    chatbox.appendChild(div);
+    chatbox.scrollTop = chatbox.scrollHeight;
+  }
+  async function botReply(msg) {
+    addMsg("Attends la réponse de l'IA...", "bot");
+    try {
+      const response = await fetch("https://english-avator-u31q.vercel.app/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: msg })
+      });
+      const data = await response.json();
+      return data.reply;
+    } catch (e) {
+      return "Erreur API : Impossible d’obtenir la réponse IA.";
     }
-    animate();
-  </script>
-  <script>
-    // Chatbot intelligent (sans API) : réponses selon mots-clés
-    const chatbox = document.getElementById('chatbox');
-    function addMsg(text, sender) {
-      const div = document.createElement('div');
-      div.className = 'msg ' + sender;
-      div.textContent = text;
-      chatbox.appendChild(div);
-      chatbox.scrollTop = chatbox.scrollHeight;
-    }
-    // "Intelligence" : réponses selon mots-clés
-    function botReply(msg) {
-      const m = msg.toLowerCase();
-      if (m.includes("bonjour") || m.includes("salut")) return "Bonjour ! 👋 Je suis English Avatar. Comment puis-je t’aider ?";
-      if (m.includes("qui es-tu") || m.includes("ton nom")) return "Je suis English Avatar, ton assistant interactif. Je peux répondre à tes questions !";
-      if (m.includes("aide") || m.includes("comment")) return "Tu peux me demander à propos de l’anglais, du projet ou des fonctionnalités du site.";
-      if (m.includes("paiement") || m.includes("stripe")) return "Le paiement Stripe sera bientôt disponible pour accéder à toutes les fonctionnalités.";
-      if (m.includes("avatar") || m.includes("3d")) return "Je suis un avatar 3D ! Bientôt, tu pourras me personnaliser.";
-      if (m.includes("essai") || m.includes("gratuit")) return "Oui, tu as droit à un essai gratuit de 7 jours !";
-      if (m.includes("anglais")) return "Je peux t’aider à améliorer ton anglais avec des exercices et des conversations.";
-      if (m.includes("merci")) return "Avec plaisir ! 😊";
-      if (m.includes("projet")) return "English Avatar est un projet pour apprendre l’anglais avec un avatar intelligent et interactif.";
-      if (m.includes("site")) return "Ce site est hébergé sur GitHub Pages. Bientôt, il aura plus de fonctionnalités !";
-      if (m.includes("aurevoir") || m.includes("bye")) return "À bientôt ! 👋";
-      // Réponse par défaut
-      const responses = [
-        "Je n’ai pas compris ta question, peux-tu reformuler ?",
-        "Intéressant ! Peux-tu préciser ?",
-        "Je suis là pour t’aider sur l’anglais ou le projet.",
-        "Pose-moi une question sur l’avatar ou le site !"
-      ];
-      return responses[Math.floor(Math.random() * responses.length)];
-    }
-    document.getElementById('chatform').onsubmit = function(e) {
-      e.preventDefault();
-      const usermsg = document.getElementById('userinput').value;
-      addMsg(usermsg, 'user');
-      setTimeout(() => {
-        addMsg(botReply(usermsg), 'bot');
-      }, 400);
-      document.getElementById('userinput').value = '';
-    };
-    // Message d’accueil
-    addMsg("Bienvenue ! Je suis ton avatar intelligent. Pose-moi une question !", 'bot');
-  </script>
-</body>
-</html>
-index.html
+  }
+  document.getElementById('chatform').onsubmit = async function(e) {
+    e.preventDefault();
+    const usermsg = document.getElementById('userinput').value;
+    addMsg(usermsg, 'user');
+    const reply = await botReply(usermsg);
+    addMsg(reply, 'bot');
+    document.getElementById('userinput').value = '';
+  };
+  // Message d’accueil
+  addMsg("Bienvenue ! Je suis ton avatar intelligent. Pose-moi une question !", 'bot');
+</script>
