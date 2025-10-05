@@ -1,0 +1,86 @@
+import React, { useEffect, useRef } from "react";
+
+const AVATAR_IMG_URL = "https://raw.githubusercontent.com/rouleauphilippe2023-oss/English-Avator/main/public/avatar-face.png"; // Remplace par ton image perso si tu veux
+
+function speak(text, voiceEnabled, premiumTTS, onStart, onEnd) {
+  if (!voiceEnabled) return;
+  if (premiumTTS) {
+    // Ex: Intégration ElevenLabs, Google, Azure... (à compléter)
+    alert("Synthèse premium non intégrée dans cet exemple !");
+    onStart && onStart();
+    setTimeout(() => { onEnd && onEnd(); }, 1800); // Simule parole
+  } else {
+    // Synthèse vocale native
+    const synth = window.speechSynthesis;
+    const utter = new window.SpeechSynthesisUtterance(text);
+    utter.onstart = onStart;
+    utter.onend = onEnd;
+    synth.speak(utter);
+  }
+}
+
+export default function Avatar({ message, config }) {
+  const [talking, setTalking] = React.useState(false);
+  const lastMessage = useRef("");
+
+  useEffect(() => {
+    // Parle uniquement quand le message change
+    if (message && message !== lastMessage.current) {
+      lastMessage.current = message;
+      speak(
+        message,
+        config.voiceEnabled,
+        config.premiumTTS,
+        () => setTalking(true),    // bouche animée ON
+        () => setTalking(false)    // bouche animée OFF
+      );
+    }
+  }, [message, config.voiceEnabled, config.premiumTTS]);
+
+  return (
+    <div style={{
+      position: "relative",
+      width: 200,
+      height: 220,
+      margin: "24px auto",
+      textAlign: "center"
+    }}>
+      {/* Avatar image */}
+      <img
+        src={AVATAR_IMG_URL}
+        alt="Avatar"
+        style={{
+          width: 200,
+          height: 200,
+          borderRadius: "50%",
+          objectFit: "cover",
+          boxShadow: "0 2px 12px #aaa"
+        }}
+      />
+      {/* Bouche animée si lipsyncEnabled */}
+      {config.lipsyncEnabled && (
+        <div style={{
+          position: "absolute",
+          left: "50%",
+          bottom: 52,
+          transform: "translateX(-50%)",
+          width: 52,
+          height: talking ? 28 : 16,
+          borderRadius: "0 0 26px 26px",
+          background: "#222",
+          transition: "height 0.15s",
+          boxShadow: "0 2px 8px #444"
+        }} />
+      )}
+      {/* Message affiché */}
+      <div style={{
+        marginTop: 10,
+        fontSize: 18,
+        color: "#333",
+        fontWeight: 500,
+        minHeight: 24
+      }}>
+        {message}
+      </div>
+    </div>
+  );
