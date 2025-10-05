@@ -7,14 +7,18 @@ This project aims to make learning more **immersive** and **motivating**, throug
 
 ## ✨ Features
 - 👩‍🏫 3D animated avatar (via Three.js and GLTF)
+- 🤖 AI-powered conversations with OpenAI (GPT-3.5-turbo)
 - 🎤 Voice recognition (Web Speech API)
 - 🔊 Text-to-Speech (listen to correct pronunciation)
 - 📚 Interactive quizzes and exercises
 - 📈 Progress tracking for learners
+- 💬 Real-time chat with intelligent responses
 
 ---
 
 ## 🚀 Installation
+
+### Local Development
 
 1. Clone this repository:
    ```bash
@@ -31,14 +35,37 @@ This project aims to make learning more **immersive** and **motivating**, throug
    ```
 4. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
+### Deployment on Vercel
+
+This application is designed to be deployed on Vercel with OpenAI integration.
+
+1. **Configure OpenAI API Key:**
+   - See [OPENAI_SETUP.md](./OPENAI_SETUP.md) for detailed instructions
+   - Add `OPENAI_API_KEY` to your Vercel environment variables
+
+2. **Deploy:**
+   - Connect your repository to Vercel
+   - Deploy automatically on push to main branch
+
+3. **Verify:**
+   - Visit your Vercel URL
+   - Test the chat with Eumonia1 avatar
+   - You should receive AI-generated responses
+
 ---
 
 ## 🕹️ Usage
 
 - Follow on-screen instructions to interact with the avatar.
+- **Chat with Eumonia1:** Ask questions in French or English and get AI-powered responses
 - Use your microphone for speaking exercises.
 - Listen and repeat with Text-to-Speech.
 - Complete quizzes to track your progress.
+
+### Example Conversations:
+- "How do I say 'hello' in English?"
+- "Can you help me practice English greetings?"
+- "What's the difference between 'their' and 'there'?"
 
 ---
 
