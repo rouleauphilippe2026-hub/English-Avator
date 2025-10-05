@@ -1,0 +1,7 @@
+node_modules/
+*.backup
+*.bak
+.env
+.env.local
+.vercel
+.DS_Store

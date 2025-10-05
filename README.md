@@ -11,6 +11,10 @@ This project aims to make learning more **immersive** and **motivating**, throug
 - 🔊 Text-to-Speech (listen to correct pronunciation)
 - 📚 Interactive quizzes and exercises
 - 📈 Progress tracking for learners
+- ✨ Animated star background
+- 🤖 Real AI integration with OpenAI
+- ⭐ Star score system with local persistence
+- 💬 Interactive AI chat interface
 
 ---
 
@@ -25,11 +29,30 @@ This project aims to make learning more **immersive** and **motivating**, throug
    cd English-Avator
    npm install
    ```
-3. Start the application:
+3. For local development, start the application:
    ```bash
    npm start
    ```
 4. Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+### Deployment on Vercel
+
+This application is designed to be deployed on Vercel with serverless functions.
+
+1. Deploy to Vercel:
+   ```bash
+   vercel
+   ```
+
+2. **Important**: Set the `OPENAI_API_KEY` environment variable in your Vercel project settings:
+   - Go to your Vercel project dashboard
+   - Navigate to Settings → Environment Variables
+   - Add a new variable:
+     - Name: `OPENAI_API_KEY`
+     - Value: Your OpenAI API key (get one from https://platform.openai.com/api-keys)
+   - Save and redeploy
+
+Without the `OPENAI_API_KEY` environment variable, the AI chat will display a configuration error message.
 
 ---
 
