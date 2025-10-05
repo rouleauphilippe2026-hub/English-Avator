@@ -1,0 +1,40 @@
+# Eumonia1 Avatar Web App
+
+Bienvenue sur la démo interactive d’Eumonia1, un avatar 3D intelligent animé !
+
+- **Cliquez sur "Parle-moi"** pour voir Eumonia1 bouger la bouche et parler grâce à la synthèse vocale.
+- **Explorez la modélisation 3D**, le lipsync en temps réel et l’intégration IA possible.
+
+Ce projet démontre l’animation d’un avatar 3D (**GLB**) dans une application **React**, pilotée par la voix et les interactions utilisateur.
+
+---
+
+## Technologies utilisées
+
+- **React**
+- **Three.js**
+- **react-three-fiber**
+- **@react-three/drei**
+
+---
+
+## Lancer le projet en local
+
+```bash
+npm install
+npm start
+```
+
+Ouvrez [http://localhost:3000](http://localhost:3000) pour visionner l’avatar animé.
+
+---
+
+## Démo
+
+![Aperçu Eumonia1](https://github.com/rouleauphilippe2023-oss/English-Avator/raw/main/public/avatar-face.png)
+
+---
+
+## Auteur
+
+[
