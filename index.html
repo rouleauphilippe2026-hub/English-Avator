@@ -17,6 +17,8 @@
     #chatform { max-width: 500px; margin: 0 auto; display: flex; gap: 8px; }
     #userinput { flex: 1; padding: 6px; border-radius: 6px; border: 1px solid #ccc; }
     button { padding: 6px 14px; border-radius: 6px; background: #2196f3; color: #fff; border: none; cursor: pointer; }
+    .read-btn { padding: 4px 10px; font-size: 14px; margin-left: 8px; background: #4caf50; }
+    .read-btn:hover { background: #45a049; }
     #controls { margin:16px 0 8px 0; display:flex; gap:12px; align-items:center;}
     select { padding:4px 8px; border-radius:6px;}
     label { font-size:14px; color:#444;}
@@ -33,8 +35,8 @@
     <div id="controls">
       <label for="langSelect">Langue:</label>
       <select id="langSelect">
-        <option value="en-US">English</option>
         <option value="fr-FR">Français</option>
+        <option value="en-US">English</option>
         <option value="es-ES">Español</option>
       </select>
       <label for="voiceSelect">Voix:</label>
@@ -52,50 +54,53 @@
 <script>
   // ========== AVATAR 3D ==========
   let avatar, mouthMorphIndex = -1, speaking = false;
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(75, 400/400, 0.1, 1000);
-  const renderer = new THREE.WebGLRenderer({ alpha:true });
-  renderer.setSize(400, 400);
-  document.getElementById('avatar-container').appendChild(renderer.domElement);
+  
+  if (typeof THREE !== 'undefined') {
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, 400/400, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ alpha:true });
+    renderer.setSize(400, 400);
+    document.getElementById('avatar-container').appendChild(renderer.domElement);
 
-  // Charge le modèle GLTF
-  const loader = new THREE.GLTFLoader();
-  loader.load('eunomie (1).glb', function(gltf) {
-    avatar = gltf.scene;
-    scene.add(avatar);
-    camera.position.z = 5;
-    // Détection auto du morph/blendshape pour la bouche
-    avatar.traverse(function(obj) {
-      if (obj.isMesh && obj.morphTargetDictionary) {
-        // Cherche une morph cible typique de bouche
-        for (const k in obj.morphTargetDictionary) {
-          if (/mouth|open|viseme|aa|blendshape/i.test(k)) {
-            mouthMorphIndex = obj.morphTargetDictionary[k];
-            obj.morphTargetInfluences[mouthMorphIndex] = 0;
+    // Charge le modèle GLTF
+    const loader = new THREE.GLTFLoader();
+    loader.load('eunomie (1).glb', function(gltf) {
+      avatar = gltf.scene;
+      scene.add(avatar);
+      camera.position.z = 5;
+      // Détection auto du morph/blendshape pour la bouche
+      avatar.traverse(function(obj) {
+        if (obj.isMesh && obj.morphTargetDictionary) {
+          // Cherche une morph cible typique de bouche
+          for (const k in obj.morphTargetDictionary) {
+            if (/mouth|open|viseme|aa|blendshape/i.test(k)) {
+              mouthMorphIndex = obj.morphTargetDictionary[k];
+              obj.morphTargetInfluences[mouthMorphIndex] = 0;
+            }
           }
         }
-      }
+      });
+      animate();
     });
-    animate();
-  });
 
-  function animate() {
-    requestAnimationFrame(animate);
-    if (avatar && speaking && mouthMorphIndex >= 0) {
-      // Bouge la bouche (animation simple)
-      avatar.traverse(function(obj) {
-        if (obj.isMesh && obj.morphTargetInfluences && mouthMorphIndex >= 0) {
-          obj.morphTargetInfluences[mouthMorphIndex] = 0.7 * Math.abs(Math.sin(Date.now()/120));
-        }
-      });
-    } else if (avatar && mouthMorphIndex >= 0) {
-      avatar.traverse(function(obj) {
-        if (obj.isMesh && obj.morphTargetInfluences && mouthMorphIndex >= 0) {
-          obj.morphTargetInfluences[mouthMorphIndex] = 0;
-        }
-      });
+    function animate() {
+      requestAnimationFrame(animate);
+      if (avatar && speaking && mouthMorphIndex >= 0) {
+        // Bouge la bouche (animation simple)
+        avatar.traverse(function(obj) {
+          if (obj.isMesh && obj.morphTargetInfluences && mouthMorphIndex >= 0) {
+            obj.morphTargetInfluences[mouthMorphIndex] = 0.7 * Math.abs(Math.sin(Date.now()/120));
+          }
+        });
+      } else if (avatar && mouthMorphIndex >= 0) {
+        avatar.traverse(function(obj) {
+          if (obj.isMesh && obj.morphTargetInfluences && mouthMorphIndex >= 0) {
+            obj.morphTargetInfluences[mouthMorphIndex] = 0;
+          }
+        });
+      }
+      renderer.render(scene, camera);
     }
-    renderer.render(scene, camera);
   }
 
   // ========== SYNTHÈSE VOCALE MULTILANGUE ==========
@@ -149,6 +154,19 @@
     const div = document.createElement('div');
     div.className = 'msg ' + sender;
     div.textContent = text;
+    
+    // Add read button for bot messages
+    if (sender === 'bot') {
+      const readBtn = document.createElement('button');
+      readBtn.className = 'read-btn';
+      readBtn.textContent = '🔊 Lire la réponse';
+      readBtn.onclick = function() {
+        speak(text);
+      };
+      div.appendChild(document.createTextNode(' '));
+      div.appendChild(readBtn);
+    }
+    
     chatbox.appendChild(div);
     chatbox.scrollTop = chatbox.scrollHeight;
   }
