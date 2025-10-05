@@ -1,0 +1,43 @@
+import OpenAI from "openai";
+
+export default async function handler(req, res) {
+  // Autorise ton front (Pages / domaine custom) à appeler l'API
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+  if (req.method === "OPTIONS") return res.status(200).end();
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Méthode non autorisée" });
+  }
+
+  try {
+    const { message, language } = req.body || {};
+    if (!message || typeof message !== "string") {
+      return res.status(400).json({ error: "Message manquant" });
+    }
+
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+    // Modèle rapide, naturel et économique. Possible d’utiliser gpt-4-turbo aussi.
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        {
+          role: "system",
+          content:
+            `Tu es Eumonia, un tuteur d’anglais amical et motivant. ` +
+            `Réponds de façon claire, concise et pédagogique en ${language || "français"}.`
+        },
+        { role: "user", content: message }
+      ],
+      temperature: 0.8
+    });
+
+    const reply = completion.choices?.[0]?.message?.content?.trim() || "Je n’ai pas compris. Reformule ta question 😊";
+    return res.status(200).json({ reply });
+  } catch (err) {
+    console.error("Erreur OpenAI:", err);
+    return res.status(500).json({ error: "Erreur API OpenAI" });
+  }
+}
