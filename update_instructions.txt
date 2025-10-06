@@ -1,0 +1,12 @@
+✅ Mise à jour à appliquer :
+1. Vérifier que /public/eunomia1.glb est bien présent.
+2. Remplacer le chargement Three.js par :
+   loader.load("/eunomia1.glb", ...)
+3. Dans index.html, définir la voix par défaut :
+   voice.lang = "fr-FR";
+   voice.name = "Microsoft Hortense - French (France)";
+4. Vérifier api/chat.js :
+   - utilise process.env.OPENAI_API_KEY
+   - modèle : gpt-4-turbo
+   - CORS : autoriser https://english-avator-u31q.vercel.app
+5. Commit & Push sur main.
