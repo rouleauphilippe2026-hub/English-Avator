@@ -150,6 +150,8 @@
 
   // ========== CHATBOT ==========
   const chatbox = document.getElementById('chatbox');
+  let loadingMsgElement = null;
+  
   function addMsg(text, sender) {
     const div = document.createElement('div');
     div.className = 'msg ' + sender;
@@ -169,36 +171,65 @@
     
     chatbox.appendChild(div);
     chatbox.scrollTop = chatbox.scrollHeight;
+    return div;
   }
+  
+  function removeMsg(element) {
+    if (element && element.parentNode) {
+      element.parentNode.removeChild(element);
+    }
+  }
+  
   async function botReply(msg) {
-    addMsg("Attends la réponse de l'IA...", "bot");
+    loadingMsgElement = addMsg("⏳ Eumonia1 réfléchit...", "bot");
     try {
       const response = await fetch("https://english-avator-u31q.vercel.app/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: msg })
       });
+      
+      // Retirer le message de chargement
+      removeMsg(loadingMsgElement);
+      loadingMsgElement = null;
+      
       if (!response.ok) {
-        throw new Error("API non disponible");
+        const errorText = await response.text();
+        console.error("API Error:", response.status, errorText);
+        throw new Error(`API error: ${response.status}`);
       }
+      
       const data = await response.json();
       let reply = data.reply || data.answer || data.message || "Réponse IA reçue, mais format inattendu.";
       return reply;
     } catch (e) {
-      return "❌ Erreur API : Impossible d’obtenir la réponse IA.";
+      // Retirer le message de chargement en cas d'erreur
+      removeMsg(loadingMsgElement);
+      loadingMsgElement = null;
+      
+      console.error("Chat error:", e);
+      return "❌ Erreur : Impossible de contacter l'IA. Vérifiez votre connexion ou réessayez plus tard.";
     }
   }
+  
   document.getElementById('chatform').onsubmit = async function(e) {
     e.preventDefault();
-    const usermsg = document.getElementById('userinput').value;
+    const usermsg = document.getElementById('userinput').value.trim();
+    
+    // Vérifier que le message n'est pas vide
+    if (!usermsg) {
+      return;
+    }
+    
     addMsg(usermsg, 'user');
+    document.getElementById('userinput').value = '';
+    
     const reply = await botReply(usermsg);
     addMsg(reply, 'bot');
     speak(reply);
-    document.getElementById('userinput').value = '';
   };
-  // Message d’accueil
-  addMsg("Bienvenue ! Je suis ton avatar intelligent. Pose-moi une question !", 'bot');
+  // Message d'accueil
+  addMsg("Bienvenue ! Je suis ton avatar intelligent. Pose-moi une question !", 'bot');
 </script>
 </body>
 </html>
