@@ -1,13 +1,152 @@
-<script src="https://js.stripe.com/v3/"></script>
-<script>
-  const stripe = Stripe("TA_CLE_PUBLIQUE_STRIPE");
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Avatar Eumonia1 - Chat IA</title>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/examples/js/loaders/GLTFLoader.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f0f0f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    #avatar-container {
+      width: 400px;
+      height: 400px;
+      margin-top: 20px;
+    }
+    select, button, input {
+      margin: 5px;
+      padding: 8px;
+      font-size: 16px;
+    }
+    #chat-box {
+      width: 80%;
+      max-width: 600px;
+      height: 300px;
+      background: white;
+      border: 1px solid #ccc;
+      overflow-y: auto;
+      padding: 10px;
+      border-radius: 8px;
+    }
+    #chat-input {
+      width: 70%;
+    }
+  </style>
+</head>
+<body>
+  <h1>Avatar Eumonia1</h1>
 
-  function startCheckout() {
-    stripe.redirectToCheckout({
-      lineItems: [{ price: "PRIX_ID_STRIPE", quantity: 1 }],
-      mode: "subscription",
-      successUrl: "https://rouleauphilippe2023-oss.github.io/English-Avator/success.html",
-      cancelUrl: "https://rouleauphilippe2023-oss.github.io/English-Avator/cancel.html"
-    });
-  }
-</script>
+  <label for="langue">Langue:</label>
+  <select id="langue">
+    <option value="fr-FR" selected>Français</option>
+    <option value="en-US">Anglais</option>
+  </select>
+
+  <label for="voix">Voix:</label>
+  <select id="voix"></select>
+
+  <div id="avatar-container"></div>
+
+  <div id="chat-box">
+    <p><b>Bienvenue !</b> Je suis ton avatar intelligent. Pose-moi une question !</p>
+  </div>
+
+  <input type="text" id="chat-input" placeholder="Pose ta question...">
+  <button onclick="envoyerMessage()">Envoyer</button>
+  <button onclick="lireDerniereReponse()">🔊 Lire la réponse</button>
+
+  <script>
+    // Chargement de l'avatar 3D
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, 400/400, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ alpha: true });
+    renderer.setSize(400, 400);
+    document.getElementById('avatar-container').appendChild(renderer.domElement);
+
+    const loader = new THREE.GLTFLoader();
+    loader.load('https://raw.githubusercontent.com/rouleauphilippe2023-oss/English-Avator/refs/heads/main/eunomia%20(1).glb',
+      function(gltf) {
+        const model = gltf.scene;
+        scene.add(model);
+        camera.position.z = 2.5;
+        function animate() {
+          requestAnimationFrame(animate);
+          model.rotation.y += 0.01;
+          renderer.render(scene, camera);
+        }
+        animate();
+      },
+      undefined,
+      function(error) {
+        console.error("Erreur de chargement de l'avatar:", error);
+      }
+    );
+
+    // Voix
+    let derniereReponse = "";
+    const synth = window.speechSynthesis;
+    const voixSelect = document.getElementById("voix");
+
+    function chargerVoix() {
+      const voix = synth.getVoices();
+      voixSelect.innerHTML = "";
+      voix.forEach(v => {
+        const option = document.createElement("option");
+        option.value = v.name;
+        option.textContent = v.name + " (" + v.lang + ")";
+        voixSelect.appendChild(option);
+      });
+    }
+
+    chargerVoix();
+    window.speechSynthesis.onvoiceschanged = chargerVoix;
+
+    function parler(texte) {
+      const utterance = new SpeechSynthesisUtterance(texte);
+      utterance.lang = document.getElementById("langue").value;
+      utterance.voice = synth.getVoices().find(v => v.name === voixSelect.value);
+      synth.speak(utterance);
+    }
+
+    // Chat avec API
+    async function envoyerMessage() {
+      const input = document.getElementById("chat-input");
+      const chatBox = document.getElementById("chat-box");
+      const message = input.value.trim();
+      if (!message) return;
+
+      chatBox.innerHTML += `<p><b>Moi :</b> ${message}</p>`;
+      chatBox.innerHTML += `<p><i>Attends la réponse de l'IA...</i></p>`;
+      input.value = "";
+
+      try {
+        const response = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message })
+        });
+        const data = await response.json();
+        const reponseIA = data.response || "Erreur : pas de réponse IA.";
+        derniereReponse = reponseIA;
+        chatBox.innerHTML += `<p><b>Avatar :</b> ${reponseIA}</p>`;
+        parler(reponseIA);
+      } catch (e) {
+        chatBox.innerHTML += `<p style="color:red;">❌ Erreur API : Impossible d’obtenir la réponse IA.</p>`;
+      }
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function lireDerniereReponse() {
+      if (derniereReponse) parler(derniereReponse);
+    }
+  </script>
+</body>
+</html>
