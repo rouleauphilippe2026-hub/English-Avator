@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Connexion</title>
+  <style>
+    body{margin:0;height:100dvh;display:grid;place-items:center;font-family:system-ui,Segoe UI,Roboto,Arial;background:#0f1115;color:#fff}
+    .card{width:min(92vw,420px);background:#161922;border:1px solid #232634;border-radius:16px;padding:20px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+    input{width:100%;padding:12px;border-radius:10px;border:1px solid #2a2e3a;background:#0f1115;color:#fff;margin:6px 0 12px}
+    button{width:100%;padding:12px;border-radius:10px;border:1px solid #4b9cff;background:#4b9cff;color:#fff;cursor:pointer}
+    .err{color:#ff9aa2;height:18px;margin-bottom:8px}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2 style="margin:0 0 8px">Espace privé</h2>
+    <div style="font-size:14px;margin-bottom:12px;opacity:.8">Veuillez vous connecter</div>
+    <div class="err" id="err"></div>
+    <input id="u" placeholder="Nom d'utilisateur" autocomplete="username"/>
+    <input id="p" type="password" placeholder="Mot de passe" autocomplete="current-password"/>
+    <button id="go">Se connecter</button>
+  </div>
+
+  <script>
+    const userOK = "Philippe";
+    // hash simple en local
+    const passOK = "phil2025";
+
+    document.getElementById("go").addEventListener("click", ()=>{
+      const u = document.getElementById("u").value.trim();
+      const p = document.getElementById("p").value.trim();
+      if (u === userOK && p === passOK) {
+        try { localStorage.setItem("session_ok","1"); } catch{}
+        window.location.replace("/index.html");
+      } else {
+        document.getElementById("err").textContent = "Accès refusé.";
+      }
+    });
+  </script>
+</body>
+</html>
